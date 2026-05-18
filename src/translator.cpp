@@ -1,9 +1,9 @@
 #include "translator.hpp"
 
-// static const CharMapping mappings[] = {
-//     {'A', 1, 2, 3},
-//     {'B', 4, 5, 6}
-// };
+static const CharMapping mappings[] = {
+    {'A', 1, 2, 3},
+    {'B', 4, 5, 6}
+};
 
 Translator::Translator() = default;
 
