@@ -9,7 +9,7 @@ struct CharMapping {
     int delayTime3;
     int delayTime4;
 
-    CharMapping(char key, int delayTime1, int delayTime2, int delayTime3, int dealyTime4)
+    CharMapping(char key, int delayTime1, int delayTime2, int delayTime3, int delayTime4)
         : key(key), delayTime1(delayTime1), delayTime2(delayTime2), delayTime3(delayTime3), delayTime4(delayTime4)
     {      
     }
