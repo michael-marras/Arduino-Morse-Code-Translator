@@ -1,9 +1,11 @@
 #include <Arduino.h>
-#include "translator.hpp"
+#include "morse.hpp"
 
 constexpr int ONBOARD = 12;
-constexpr const char* MESSAGE = "HELLO WORLD";
+constexpr const char* MESSAGE = "HELLO";
 constexpr int TENSECONDS = 10000;
+constexpr int ONE_SECOND = 1000;
+constexpr int FIVE_SECONDS = 5000;
 
 // put function declarations here:
 int myFunction(int, int);
@@ -14,10 +16,8 @@ void setup() {
 }
 
 void loop() {
-  Translator myTranslator;
-  myTranslator.Translate(MESSAGE);
+  delay(FIVE_SECONDS);
 
-  // Signal end of translation
-  digitalWrite(ONBOARD, HIGH);
-  delay(TENSECONDS);
+  Morse messageInMorse(MESSAGE);
+  messageInMorse.Transmit(ONBOARD);
 }
