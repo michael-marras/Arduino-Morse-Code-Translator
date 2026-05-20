@@ -6,8 +6,9 @@ constexpr int DASH_MS = 360;
 constexpr int LETTER_PARTS_SPACE_MS = 120;
 constexpr int DIFFERENT_LETTERS_SPACE_MS = 360;
 constexpr int WORD_SPACE_MS = 840;
+constexpr int ASCII_DIFF = 32;
 
-const MorseChar Morse::letterToMorseChar[ALPHABETSIZE] = { //Does not include spaces
+const MorseChar Morse::morseTable[MORSE_TABLE_SIZE] = { //Does not include spaces
     MorseChar('A', DOT_MS, DASH_MS, 0, 0),                 // .-
     MorseChar('B', DASH_MS, DOT_MS, DOT_MS, DOT_MS),       // -...
     MorseChar('C', DASH_MS, DOT_MS, DASH_MS, DOT_MS),      // -.-.
@@ -34,6 +35,7 @@ const MorseChar Morse::letterToMorseChar[ALPHABETSIZE] = { //Does not include sp
     MorseChar('X', DASH_MS, DOT_MS, DOT_MS, DASH_MS),      // -..-
     MorseChar('Y', DASH_MS, DOT_MS, DASH_MS, DASH_MS),     // -.--
     MorseChar('Z', DASH_MS, DASH_MS, DOT_MS, DOT_MS),      // --..
+    MorseChar(' ', 0, 0, 0, 0)                             //
 };
 
 Morse::Morse(const char* messageEng) {
@@ -51,55 +53,41 @@ Morse::~Morse() = default;
 void Morse::Translate() {
     int i;
     for (i = 0; this -> messageEng[i] != '\0'; i++) { 
-        MorseChar morseLetter = this -> GetMorseChar(messageEng[i]);
-        this -> messageMorse[i] = morseLetter;
+        this -> messageMorse[i] = this -> GetMorseChar(messageEng[i]);
     }
 
-    this -> messageMorse[i] = MorseChar();
+    this -> messageMorse[i] = MorseChar('\0', 0, 0, 0, 0);
 }
 
-MorseChar Morse::GetMorseChar(char letter) {
-    return letterToMorseChar[letter - 'A'];
+MorseChar Morse::GetMorseChar(char letter) { //Very Error prone if letter does not fall in the range of A-Z or ' '
+    if (letter == ' ') {
+        return MorseChar(' ', 0, 0, 0, 0);
+    }
+    else if (letter >= 'a' && letter <= 'z' ) {
+        letter = letter - ASCII_DIFF;
+    }
+    return morseTable[letter - 'A'];
 }
 
 void Morse::Transmit(int onBoard) {
-    for (int i = 0; this -> messageMorse[i].key != '\0'; i++) { //Logging off but left off thinking about simplifying this by looping through each morse char
-        // Letter Part 1
-        digitalWrite(onBoard, HIGH);
-        delay(messageMorse[i].delay1);
-        
-        digitalWrite(onBoard, LOW);
-        delay(LETTER_PARTS_SPACE_MS);
-
-        // Letter Part 2
-        if (messageMorse[i].delay2 != 0) {
-            digitalWrite(onBoard, HIGH);
-            delay(messageMorse[i].delay2);
-
-            digitalWrite(onBoard, LOW);
-            delay(LETTER_PARTS_SPACE_MS);
+    for (int letter = 0; this -> messageMorse[letter].key != '\0'; letter++) { 
+        if (messageMorse[letter].key == ' ') {
+            delay(WORD_SPACE_MS);
+            continue;
         }
 
-        // Letter Part 3
-        if (messageMorse[i].delay3 != 0) {
-            digitalWrite(onBoard, HIGH);
-            delay(messageMorse[i].delay2);
+        for (int delayDuration : this -> messageMorse[letter].delays) {
+            if (delayDuration != 0) {
+                digitalWrite(onBoard, HIGH);
+                delay(delayDuration);
 
-            digitalWrite(onBoard, LOW);
-            delay(LETTER_PARTS_SPACE_MS);
-        }
-        
-        // Letter Part 4
-        if (messageMorse[i].delay4 != 0) {
-            digitalWrite(onBoard, HIGH);
-            delay(messageMorse[i].delay2);
-
-            digitalWrite(onBoard, LOW);
-            delay(LETTER_PARTS_SPACE_MS);
+                digitalWrite(onBoard, LOW);
+                delay(LETTER_PARTS_SPACE_MS);
+            }
         }
 
         digitalWrite(onBoard, LOW);
-        delay(WORD_SPACE_MS);
+        delay(DIFFERENT_LETTERS_SPACE_MS);
     }
 }
 
