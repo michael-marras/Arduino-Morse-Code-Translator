@@ -1,29 +1,26 @@
 #ifndef MORSE_HPP
 #define MORSE_HPP
 
+constexpr int DELAYS_SIZE = 4;
+
 struct MorseChar {
     char key;
-    int delay1;
-    int delay2;
-    int delay3;
-    int delay4;
+    int delays[DELAYS_SIZE];
 
     MorseChar(char key, int delay1, int delay2, int delay3, int delay4) {
         this -> key = key;
-        this -> delay1 = delay1;
-        this -> delay2 = delay2;
-        this -> delay3 = delay3;
-        this -> delay4 = delay4;
+        this -> delays[0] = delay1;
+        this -> delays[1] = delay2;
+        this -> delays[2] = delay3;
+        this -> delays[3] = delay4;
     }
 
-    MorseChar() {
-        this -> key = '\0';
-    }
+    MorseChar() = default;
 };
 
 class Morse {
     public:
-        /**
+         /**
          * @brief class constructor
          * @param messageEng is an english message that will be stored in the object. Defaults to nullptr if there is no argument
          */
@@ -54,9 +51,9 @@ class Morse {
 
     private:
         static const int MAXMORSELENGTH = 128;
-        static const int ALPHABETSIZE = 26;
+        static const int MORSE_TABLE_SIZE = 27;
         const char* messageEng;
         MorseChar messageMorse[MAXMORSELENGTH];
-        static const MorseChar letterToMorseChar[ALPHABETSIZE];
+        static const MorseChar morseTable[MORSE_TABLE_SIZE];
 };
 #endif
