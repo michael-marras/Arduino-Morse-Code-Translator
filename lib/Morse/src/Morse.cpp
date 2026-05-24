@@ -1,4 +1,4 @@
-#include "morse.hpp"
+#include "Morse.hpp"
 #include <Arduino.h>
 
 constexpr int DOT_MS = 120;
@@ -48,15 +48,21 @@ Morse::Morse(const char* messageEng) {
     }
 }
 
+Morse::Morse() = default;
+
 Morse::~Morse() = default;
 
-void Morse::Translate() {
+int Morse::Translate() {
     int i;
     for (i = 0; this -> messageEng[i] != '\0'; i++) { 
+        if (messageEng[i] < 'A' && messageEng[i] != ' ' || (messageEng[i] > 'Z' && messageEng[i] < 'a') || messageEng[i] > 'z') {
+            return 1;
+        };
         this -> messageMorse[i] = this -> GetMorseChar(messageEng[i]);
     }
 
     this -> messageMorse[i] = MorseChar('\0', 0, 0, 0, 0);
+    return 0;
 }
 
 MorseChar Morse::GetMorseChar(char letter) { //Very Error prone if letter does not fall in the range of A-Z or ' '
@@ -72,7 +78,7 @@ MorseChar Morse::GetMorseChar(char letter) { //Very Error prone if letter does n
 void Morse::Transmit(int onBoard) {
     for (int letter = 0; this -> messageMorse[letter].key != '\0'; letter++) { 
         if (messageMorse[letter].key == ' ') {
-            delay(WORD_SPACE_MS);
+            delay(WORD_SPACE_MS - DIFFERENT_LETTERS_SPACE_MS); //spaces follow delay of space between letters so that's why we're delaying by this difference
             continue;
         }
 
@@ -91,3 +97,10 @@ void Morse::Transmit(int onBoard) {
     }
 }
 
+const char* Morse::GetMessageEng() {
+    return this -> messageEng;
+}
+
+void Morse::SetMessageEng(const char* messageEng) {
+    this -> messageEng = messageEng;
+}

@@ -20,11 +20,16 @@ struct MorseChar {
 
 class Morse {
     public:
-         /**
+        /**
          * @brief class constructor
+         */
+        Morse();
+
+         /**
+         * @brief class constructor with english message
          * @param messageEng is an english message that will be stored in the object. Defaults to nullptr if there is no argument
          */
-        Morse(const char* messageEng = nullptr);
+        Morse(const char* messageEng);
 
         /**
          * @brief class deconstructor
@@ -33,8 +38,9 @@ class Morse {
 
         /**
          * @brief Translates the english message into morse code and stores it in the memeber variable messageMorse 
+         * @return 0 if success, 1 if there is an error
          */
-        void Translate();
+        int Translate();
 
         /**
          * @brief Transmits the morsecode message through the arduino board using the specified pin number
@@ -49,11 +55,23 @@ class Morse {
          */
         MorseChar GetMorseChar(char letter);
 
+        /**
+         * @brief Returns english message from object
+         * @return this -> messageEng
+         */
+        const char* GetMessageEng();
+
+        /**
+         * @brief Set english message of object
+         * @param messageEng is the english message the object is being set to hold
+         */
+        void SetMessageEng(const char* messageEng);
+
     private:
-        static const int MAXMORSELENGTH = 128;
+        static const int MAX_MORSE_LENGTH = 128;
         static const int MORSE_TABLE_SIZE = 27;
-        const char* messageEng;
-        MorseChar messageMorse[MAXMORSELENGTH];
+        const char* messageEng = nullptr;
+        MorseChar messageMorse[MAX_MORSE_LENGTH];
         static const MorseChar morseTable[MORSE_TABLE_SIZE];
 };
 #endif
