@@ -1,4 +1,4 @@
-#include "morse.hpp"
+#include "Morse.hpp"
 #include <Arduino.h>
 
 constexpr int DOT_MS = 120;
