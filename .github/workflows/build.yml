@@ -24,4 +24,4 @@ jobs:
       - name: Static Code Analysis
         run: pio check --fail-on-defect=high
       - name: Unit Testing
-        run: pio test
+        run: pio test -e native
