@@ -1,78 +1,65 @@
 #include "Morse.hpp"
 #include <Arduino.h>
 
-constexpr int DOT_MS = 120;
-constexpr int DASH_MS = 360;
+constexpr MorseChar Morse::morseTable[Morse::MORSE_TABLE_SIZE];
+
 constexpr int LETTER_PARTS_SPACE_MS = 120;
 constexpr int DIFFERENT_LETTERS_SPACE_MS = 360;
 constexpr int WORD_SPACE_MS = 840;
 constexpr int ASCII_DIFF = 32;
+constexpr int ERROR = 26;
 
-const MorseChar Morse::morseTable[MORSE_TABLE_SIZE] = { //Does not include spaces
-    MorseChar('A', DOT_MS, DASH_MS, 0, 0),                 // .-
-    MorseChar('B', DASH_MS, DOT_MS, DOT_MS, DOT_MS),       // -...
-    MorseChar('C', DASH_MS, DOT_MS, DASH_MS, DOT_MS),      // -.-.
-    MorseChar('D', DASH_MS, DOT_MS, DOT_MS, 0),            // -..
-    MorseChar('E', DOT_MS, 0, 0, 0),                       // .
-    MorseChar('F', DOT_MS, DOT_MS, DASH_MS, DOT_MS),       // ..-.
-    MorseChar('G', DASH_MS, DASH_MS, DOT_MS, 0),           // --.
-    MorseChar('H', DOT_MS, DOT_MS, DOT_MS, DOT_MS),        // ....
-    MorseChar('I', DOT_MS, DOT_MS, 0, 0),                  // ..
-    MorseChar('J', DOT_MS, DASH_MS, DASH_MS, DASH_MS),     // .---
-    MorseChar('K', DASH_MS, DOT_MS, DASH_MS, 0),           // -.-
-    MorseChar('L', DOT_MS, DASH_MS, DOT_MS, DOT_MS),       // .-..
-    MorseChar('M', DASH_MS, DASH_MS, 0, 0),                // --
-    MorseChar('N', DASH_MS, DOT_MS, 0, 0),                 // -.
-    MorseChar('O', DASH_MS, DASH_MS, DASH_MS, 0),          // ---
-    MorseChar('P', DOT_MS, DASH_MS, DASH_MS, DOT_MS),      // .--.
-    MorseChar('Q', DASH_MS, DASH_MS, DOT_MS, DASH_MS),     // --.-
-    MorseChar('R', DOT_MS, DASH_MS, DOT_MS, 0),            // .-.
-    MorseChar('S', DOT_MS, DOT_MS, DOT_MS, 0),             // ...
-    MorseChar('T', DASH_MS, 0, 0, 0),                      // -
-    MorseChar('U', DOT_MS, DOT_MS, DASH_MS, 0),            // ..-
-    MorseChar('V', DOT_MS, DOT_MS, DOT_MS, DASH_MS),       // ...-
-    MorseChar('W', DOT_MS, DASH_MS, DASH_MS, 0),           // .--
-    MorseChar('X', DASH_MS, DOT_MS, DOT_MS, DASH_MS),      // -..-
-    MorseChar('Y', DASH_MS, DOT_MS, DASH_MS, DASH_MS),     // -.--
-    MorseChar('Z', DASH_MS, DASH_MS, DOT_MS, DOT_MS),      // --..
-    MorseChar(' ', 0, 0, 0, 0)                             //
-};
-
-Morse::Morse(const char* messageEng) {
-    if (!messageEng) {
-        return;
-    }
-    else {
-        this -> messageEng = messageEng;
-        this -> Translate();
+Morse::Morse(const char* messageEng)
+    : messageEng(messageEng)
+{
+    if (this -> Translate()) {
+        this -> messageEng = nullptr;
+        // Write a function to clear messageMorse
     }
 }
+    
 
 Morse::Morse() = default;
 
 Morse::~Morse() = default;
 
 int Morse::Translate() {
+    if (!this -> messageEng) {
+        return 1;
+    }
+
     int i;
-    for (i = 0; this -> messageEng[i] != '\0'; i++) { 
-        if (messageEng[i] < 'A' && messageEng[i] != ' ' || (messageEng[i] > 'Z' && messageEng[i] < 'a') || messageEng[i] > 'z') {
+    for (i = 0; this -> messageEng[i] != '\0'; i++) {
+        MorseChar morseChar = GetMorseChar(messageEng[i]);
+
+        if (!morseChar.error) {
+            this -> messageMorse[i] = morseChar;
+        }
+        else {
             return 1;
-        };
-        this -> messageMorse[i] = this -> GetMorseChar(messageEng[i]);
+        }
     }
 
     this -> messageMorse[i] = MorseChar('\0', 0, 0, 0, 0);
     return 0;
 }
 
-MorseChar Morse::GetMorseChar(char letter) { //Very Error prone if letter does not fall in the range of A-Z or ' '
+MorseChar Morse::GetMorseChar(const char& letter) { //Very Error prone if letter does not fall in the range of A-Z or ' '
+    int morseKey;
     if (letter == ' ') {
         return MorseChar(' ', 0, 0, 0, 0);
     }
     else if (letter >= 'a' && letter <= 'z' ) {
-        letter = letter - ASCII_DIFF;
+        morseKey = letter - ASCII_DIFF - 'A';
     }
-    return morseTable[letter - 'A'];
+    else if (letter >= 'A' && letter <= 'Z'){
+        morseKey = letter - 'A';
+    }
+    else {
+        morseKey = ERROR;
+    }
+    
+    return morseTable[morseKey];
 }
 
 void Morse::Transmit(int onBoard) {
@@ -101,6 +88,20 @@ const char* Morse::GetMessageEng() {
     return this -> messageEng;
 }
 
-void Morse::SetMessageEng(const char* messageEng) {
+void Morse::ClearMessage() {
+    this -> ClearMessageEng();
+    this -> ClearMessageMorse();
+}
+
+void Morse::ClearMessageEng() {
+    this -> messageEng = nullptr;
+}
+
+void Morse::ClearMessageMorse() {
+    this -> messageMorse[0] = this -> GetMorseChar(ERROR);
+}
+
+int Morse::SetMessage(const char* messageEng) {
     this -> messageEng = messageEng;
+    return this -> Translate();
 }
