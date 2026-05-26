@@ -1,7 +1,4 @@
-#ifdef ARDUINO
 #include <Arduino.h>
-#endif
-
 #include <unity.h>
 #include <Morse.hpp>
 
