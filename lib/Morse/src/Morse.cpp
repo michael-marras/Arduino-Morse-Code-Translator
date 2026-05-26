@@ -1,5 +1,7 @@
 #include "Morse.hpp"
+#ifndef NATIVE_ENV
 #include <Arduino.h>
+#endif
 
 constexpr MorseChar Morse::morseTable[Morse::MORSE_TABLE_SIZE];
 
@@ -63,6 +65,7 @@ MorseChar Morse::GetMorseChar(const char& letter) { //Very Error prone if letter
 }
 
 void Morse::Transmit(int onBoard) {
+#ifndef NATIVE_ENV
     for (int letter = 0; this -> messageMorse[letter].key != '\0'; letter++) { 
         if (messageMorse[letter].key == ' ') {
             delay(WORD_SPACE_MS - DIFFERENT_LETTERS_SPACE_MS); //spaces follow delay of space between letters so that's why we're delaying by this difference
@@ -82,6 +85,7 @@ void Morse::Transmit(int onBoard) {
         digitalWrite(onBoard, LOW);
         delay(DIFFERENT_LETTERS_SPACE_MS);
     }
+#endif
 }
 
 const char* Morse::GetMessageEng() {

@@ -2,7 +2,7 @@
 #include <Morse.hpp>
 
 constexpr int ON_BOARD        = 12;
-constexpr const char* MESSAGE = "E T E T EE TT";
+constexpr const char* MESSAGE = "Lila is so cool and not smelly";
 constexpr int TEN_SECONDS     = 10000;
 constexpr int ONE_SECOND      = 1000;
 constexpr int FIVE_SECONDS    = 5000;
