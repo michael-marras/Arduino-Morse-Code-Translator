@@ -1,4 +1,3 @@
-#ifdef ARDUINO
 #include "Morse.hpp"
 #include <Arduino.h>
 
@@ -106,4 +105,3 @@ int Morse::SetMessage(const char* messageEng) {
     this -> messageEng = messageEng;
     return this -> Translate();
 }
-#endif

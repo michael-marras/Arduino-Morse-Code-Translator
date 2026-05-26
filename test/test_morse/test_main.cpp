@@ -1,6 +1,7 @@
 #ifdef ARDUINO
-
 #include <Arduino.h>
+#endif
+
 #include <unity.h>
 #include <Morse.hpp>
 
@@ -174,4 +175,3 @@ void setup() {
 }
 
 void loop() {}
-#endif
