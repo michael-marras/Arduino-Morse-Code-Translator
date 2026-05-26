@@ -1,56 +1,34 @@
+#ifdef ARDUINO
 #include <Arduino.h>
+#endif
+
 #include <unity.h>
 #include <Morse.hpp>
 
 constexpr int DOT_MS = 120;
 constexpr int DASH_MS = 360;
 constexpr int NO_DELAY = 0;
+Morse morseDefault;
 
-void test_example() {
-    TEST_ASSERT_EQUAL(1, 1); // replace with real assertions
-}
 
 void test_constructor_default() {
-    Morse morse;
-
-    TEST_ASSERT_NULL_MESSAGE(
-    morse.GetMessageEng(),
-    "Default constructor should initialize messageEng to nullptr"
+    TEST_ASSERT_NULL(
+    morseDefault.GetMessageEng()
     );
 }
 
 void test_constructor_message() {
-    Morse morse("Hello World");
+    Morse morseWithMessage("Hello World");
 
-    TEST_ASSERT_EQUAL_MESSAGE(
-        morse.GetMessageEng(),
-        "Hello World",
-        "messageEng should be initialized to \"Hello World\""
+    TEST_ASSERT_EQUAL_STRING(
+        morseWithMessage.GetMessageEng(),
+        "Hello World"
     );
 }
 
-void test_getmorsechar() {
+void test_getmorsechar_uppercase() {
     // Test GetMoresChar('A')
-    Morse morse;
-    MorseChar morseChar = morse.GetMorseChar('A');
-
-    TEST_ASSERT_EQUAL_CHAR(
-        morseChar.key,
-        'A'
-    );
-
-    TEST_ASSERT_EQUAL_INT(
-        morseChar.delays[0],
-        DOT_MS
-    );
-
-    TEST_ASSERT_EQUAL_INT(
-        morseChar.delays[1],
-        DASH_MS
-    );
-
-    // Test GetMoresChar('a')
-    morseChar = morse.GetMorseChar('a');
+    MorseChar morseChar = morseDefault.GetMorseChar('A');
 
     TEST_ASSERT_EQUAL_CHAR(
         morseChar.key,
@@ -68,7 +46,7 @@ void test_getmorsechar() {
     );
 
     // Test GetMorseChar('Z')
-    morseChar = morse.GetMorseChar('Z');
+    morseChar = morseDefault.GetMorseChar('Z');
 
     TEST_ASSERT_EQUAL_CHAR(
         morseChar.key,
@@ -94,10 +72,32 @@ void test_getmorsechar() {
         DOT_MS,
         morseChar.delays[3]
     );
+}
+
+void test_getmorsechar_lowercase() {
+    MorseChar morseChar = morseDefault.GetMorseChar('a');
+
+    // Test GetMoresChar('a')
+    TEST_ASSERT_EQUAL_CHAR(
+        'A',
+        morseChar.key
+    );
+
+    TEST_ASSERT_EQUAL_INT(
+        morseChar.delays[0],
+        DOT_MS
+    );
+
+    TEST_ASSERT_EQUAL_INT(
+        morseChar.delays[1],
+        DASH_MS
+    );
+}
+
+void test_getmorsechar_delimiters() {
+    MorseChar morseChar = morseDefault.GetMorseChar(' ');
 
     // Test GetMorseChar(' ')
-    morseChar = morse.GetMorseChar(' ');
-
     TEST_ASSERT_EQUAL_CHAR(
         morseChar.key,
         ' '
@@ -107,15 +107,70 @@ void test_getmorsechar() {
         NO_DELAY,
         morseChar.delays[0]
     );
-    
+}
+
+void test_getmorsechar_invalid() {
+    // Test GetMorseChar('@')
+    MorseChar morseChar = morseDefault.GetMorseChar('@');
+    TEST_ASSERT_EQUAL_CHAR(
+        '\0',
+        morseChar.key
+    );
+
+    TEST_ASSERT_TRUE(
+        morseChar.error
+    );
+
+    // Test GetMorseChar('[')
+    morseChar = morseDefault.GetMorseChar('[');
+    TEST_ASSERT_EQUAL_CHAR(
+        '\0',
+        morseChar.key
+    );
+
+    TEST_ASSERT_TRUE(
+        morseChar.error
+    );
+
+    // Test GetMorseChar('\'')
+    morseChar = morseDefault.GetMorseChar('\'');
+    TEST_ASSERT_EQUAL_CHAR(
+        '\0',
+        morseChar.key
+    );
+
+    TEST_ASSERT_TRUE(
+        morseChar.error
+    );
+
+    // Test GetMorseChar('{')
+    morseChar = morseDefault.GetMorseChar('{');
+    TEST_ASSERT_EQUAL_CHAR(
+        '\0',
+        morseChar.key
+    );
+
+    TEST_ASSERT_TRUE(
+        morseChar.error
+    );
+}
+
+void test_translate_invalid() {
+    TEST_ASSERT_EQUAL_INT(
+        1,
+        morseDefault.SetMessage("!")
+    );
 }
 
 void setup() {
     UNITY_BEGIN();
-    RUN_TEST(test_example);
     RUN_TEST(test_constructor_default);
     RUN_TEST(test_constructor_message);
-    RUN_TEST(test_getmorsechar);
+    RUN_TEST(test_getmorsechar_uppercase);
+    RUN_TEST(test_getmorsechar_lowercase);
+    RUN_TEST(test_getmorsechar_delimiters);
+    RUN_TEST(test_getmorsechar_invalid);
+    RUN_TEST(test_translate_invalid);
     UNITY_END();
 }
 
