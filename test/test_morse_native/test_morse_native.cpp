@@ -9,6 +9,7 @@ Morse morseDefault;
 
 TEST(ConstructorTest, Default) {
     EXPECT_EQ(morseDefault.GetMessageEng(), nullptr);
+    EXPECT_EQ(morseDefault.GetMessageMorseNullTerm().key, '\0');
 }
 
 TEST(ConstructorTest, WithMessage) {

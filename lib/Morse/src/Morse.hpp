@@ -1,14 +1,19 @@
 #ifndef MORSE_HPP
 #define MORSE_HPP
+#ifndef NATIVE_ENV
+    #include <Arduino.h>
+#else
+    #include <stdint.h>
+#endif
 
-constexpr int DELAYS_SIZE = 4;
+constexpr uint8_t  DELAYS_SIZE = 4;
 
 struct MorseChar {
-    char key;
-    int delays[DELAYS_SIZE];
-    bool error;
+    char     key;
+    uint16_t delays[DELAYS_SIZE];
+    bool     error;
 
-    constexpr MorseChar(char key = '\0', int delay1 = 0, int delay2 = 0, int delay3 = 0, int delay4 = 0, bool error = false)
+    constexpr MorseChar(char key = '\0', uint16_t delay1 = 0, uint16_t delay2 = 0, uint16_t delay3 = 0, uint16_t delay4 = 0, bool error = false)
     : key(key), delays{delay1, delay2, delay3, delay4}, error(error) {} 
 };
 
@@ -33,8 +38,9 @@ class Morse {
         /**
          * @brief Transmits the morsecode message through the arduino board using the specified pin number
          * @param onBoard is the pin number being used in the led circuit on the arduino
+         * @return 0 if successful, 1 if not
          */
-        void Transmit(int onBoard);
+        uint8_t Transmit(uint8_t onBoard);
 
         /**
          * @brief Returns english message from object
@@ -59,15 +65,23 @@ class Morse {
          * @param english message to be stored in morse object
          * @return 0 if successful, 1 if not
          */
-        int SetMessage(const char* messageEng);
+        uint8_t SetMessage(const char* messageEng);
+
+        /**
+         * @brief Get the messageMorse char that has the null terminator
+         */
+        MorseChar GetMessageMorseNullTerm();
 
     private:
-        static constexpr int MAX_MORSE_LENGTH = 64;
-        static constexpr int MORSE_TABLE_SIZE = 27;
-        static constexpr int DOT_MS = 120;
-        static constexpr int DASH_MS = 360;
+        
+        static constexpr uint8_t  MORSE_TABLE_SIZE = 27;
+        static constexpr uint8_t  DOT_MS           = 120;
+        static constexpr uint16_t DASH_MS          = 360;
+        static constexpr uint8_t  MAX_MORSE_LENGTH = 64;
+
         const char* messageEng = nullptr;
-        MorseChar messageMorse[MAX_MORSE_LENGTH];
+        MorseChar messageMorse[MAX_MORSE_LENGTH] = {MorseChar('\0', 0, 0, 0, 0, true)};
+
         static constexpr MorseChar morseTable[MORSE_TABLE_SIZE] = { //Does not include spaces
             MorseChar('A', DOT_MS, DASH_MS, 0, 0),                 // .-
             MorseChar('B', DASH_MS, DOT_MS, DOT_MS, DOT_MS),       // -...
@@ -95,7 +109,7 @@ class Morse {
             MorseChar('X', DASH_MS, DOT_MS, DOT_MS, DASH_MS),      // -..-
             MorseChar('Y', DASH_MS, DOT_MS, DASH_MS, DASH_MS),     // -.--
             MorseChar('Z', DASH_MS, DASH_MS, DOT_MS, DOT_MS),      // --..
-            MorseChar('\0', 0, 0, 0, 0, true)                       // error
+            MorseChar('\0', 0, 0, 0, 0, true)                      // error
         };
 
         /**
@@ -104,14 +118,14 @@ class Morse {
         void ClearMessageEng();
 
         /**
-         * @brief Clear the contents of messageEng
+         * @brief Clear the contents of messageMorse
          */
         void ClearMessageMorse();
 
         /**
-         * @brief Translates the english message into morse code and stores it in the memeber variable messageMorse 
+         * @brief Translates the english message into morse code and stores it in the member variable messageMorse 
          * @return 0 if success, 1 if there is an error
          */
-        int Translate();
+        uint8_t Translate();
 };
 #endif
