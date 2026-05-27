@@ -1,21 +1,17 @@
 #include <Arduino.h>
 #include <Morse.hpp>
 
-constexpr int ON_BOARD        = 12;
-constexpr const char* MESSAGE = "Lila is so cool and not smelly";
-constexpr int TEN_SECONDS     = 10000;
-constexpr int ONE_SECOND      = 1000;
-constexpr int FIVE_SECONDS    = 5000;
-constexpr int BAUD_BPS        = 9600;
+constexpr const char* MESSAGE      = "E T EE TT";
+constexpr uint8_t     LED_PIN      = 12;
+constexpr uint16_t    FIVE_SECONDS = 5000;
+
+Morse messageInMorse(MESSAGE);
 
 void setup() {
-  // put your setup code here, to run once:
-  pinMode(ON_BOARD, OUTPUT);
+  pinMode(LED_PIN, OUTPUT); 
 }
 
 void loop() {
   delay(FIVE_SECONDS);
-  Morse messageInMorse(MESSAGE); //Changed Transmit() so it returns 1 if there's an error
-  messageInMorse.Transmit(ON_BOARD);
-  Serial.println("Message Transmitted"); 
+  messageInMorse.Transmit(LED_PIN);
 }
