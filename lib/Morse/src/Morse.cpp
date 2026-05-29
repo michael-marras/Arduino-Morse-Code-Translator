@@ -6,48 +6,38 @@ constexpr uint8_t  LETTER_PARTS_SPACE_MS      = 120;
 constexpr uint16_t DIFFERENT_LETTERS_SPACE_MS = 360;
 constexpr uint16_t WORD_SPACE_MS              = 840;
 constexpr uint8_t  ASCII_DIFF                 = 32;
-constexpr uint8_t  ERROR                      = 26;
+constexpr uint8_t  SPACE                      = 26;
+constexpr uint8_t  ERROR                      = 27;
+
+// Public Methods
+
+Morse::Morse() = default;
 
 Morse::Morse(const char* messageEng)
     : messageEng(messageEng)
 {
     if (this -> Translate()) {
-        this -> messageEng = nullptr;
-        // Write a function to clear messageMorse
+        this -> ClearMessage();
     }
 }
-    
-
-Morse::Morse() = default;
 
 Morse::~Morse() = default;
 
-uint8_t Morse::Translate() {
-    if (!this -> messageEng) {
-        return 1;
-    }
+const char* Morse::GetMessageEng() {
+    return this -> messageEng;
+}
 
-    uint16_t i;
-    for (i = 0; this -> messageEng[i] != '\0'; i++) {
-        MorseChar morseChar = GetMorseChar(messageEng[i]);
-
-        if (!morseChar.error) {
-            this -> messageMorse[i] = morseChar;
-        }
-        else {
-            return 1;
-        }
-    }
-
-    this -> messageMorse[i] = MorseChar('\0', 0, 0, 0, 0);
-    return 0;
+MorseChar Morse::GetMessageMorseNullTerm() {
+    uint8_t i;
+    for (i = 0; this -> messageMorse[i].key != '\0'; i++) {}
+    return this -> messageMorse[i];
 }
 
 MorseChar Morse::GetMorseChar(const char& letter) { //Very Error prone if letter does not fall in the range of A-Z or ' '
     uint8_t morseKey;
     if (letter == ' ') {
-        return MorseChar(' ', 0, 0, 0, 0);
-    }
+        morseKey = SPACE;
+    } 
     else if (letter >= 'a' && letter <= 'z' ) {
         morseKey = letter - ASCII_DIFF - 'A';
     }
@@ -61,16 +51,41 @@ MorseChar Morse::GetMorseChar(const char& letter) { //Very Error prone if letter
     return morseTable[morseKey];
 }
 
+uint8_t Morse::SetMessage(const char* messageEng) {
+    this -> messageEng = messageEng;
+
+    if (this -> Translate()) {
+        this -> ClearMessage();
+        return 1;
+    }
+    else {
+        return 0;
+    }
+}
+
+void Morse::ClearMessage() {
+    this -> ClearMessageEng();
+    this -> ClearMessageMorse();
+}
+
 uint8_t Morse::Transmit(uint8_t onBoard) {
 #ifndef NATIVE_ENV
-    uint16_t letter;
-    for (letter = 0; this -> messageMorse[letter].key != '\0'; letter++) { 
-        if (messageMorse[letter].key == ' ') {
-            delay(WORD_SPACE_MS - DIFFERENT_LETTERS_SPACE_MS); //spaces follow delay of space between letters so that's why we're delaying by this difference
+
+    uint8_t i;
+    MorseChar morseChar;
+    for (i = 0; this -> messageMorse[i].key != '\0'; i++) { 
+        morseChar = this -> messageMorse[i];
+
+        if (morseChar.key == ' ') {
+            delay(WORD_SPACE_MS); 
             continue;
         }
+        else if (i != 0) {
+            digitalWrite(onBoard, LOW);
+            delay(DIFFERENT_LETTERS_SPACE_MS);
+        }
 
-        for (uint16_t delayDuration : this -> messageMorse[letter].delays) {
+        for (uint16_t delayDuration : morseChar.delays) {
             if (delayDuration != 0) {
                 digitalWrite(onBoard, HIGH);
                 delay(delayDuration);
@@ -78,26 +93,18 @@ uint8_t Morse::Transmit(uint8_t onBoard) {
                 delay(LETTER_PARTS_SPACE_MS);
             }
         }
-
-        digitalWrite(onBoard, LOW);
-        delay(DIFFERENT_LETTERS_SPACE_MS);
     }
 
-    if (this -> messageMorse[letter].error) {
+    morseChar = this -> messageMorse[i];
+    if (morseChar.error) {
         return 1;
     }
+
 #endif
     return 0;
 }
 
-const char* Morse::GetMessageEng() {
-    return this -> messageEng;
-}
-
-void Morse::ClearMessage() {
-    this -> ClearMessageEng();
-    this -> ClearMessageMorse();
-}
+// Private Methods
 
 void Morse::ClearMessageEng() {
     this -> messageEng = nullptr;
@@ -107,13 +114,22 @@ void Morse::ClearMessageMorse() {
     this -> messageMorse[0] = this -> GetMorseChar(ERROR);
 }
 
-uint8_t Morse::SetMessage(const char* messageEng) {
-    this -> messageEng = messageEng;
-    return this -> Translate();
-}
+uint8_t Morse::Translate() {
+    if (!this -> messageEng) {
+        return 1;
+    }
 
-MorseChar Morse::GetMessageMorseNullTerm() {
-    uint8_t i;
-    for (i = 0; this -> messageMorse[i].key != '\0'; i++) {}
-    return this -> messageMorse[i];
+    uint16_t i;
+    for (i = 0; this -> messageEng[i] != '\0'; i++) {
+        MorseChar morseChar = GetMorseChar(messageEng[i]);
+
+        if (morseChar.error) {
+            return 1;
+        }
+        
+        this -> messageMorse[i] = morseChar;
+    }
+
+    this -> messageMorse[i] = MorseChar('\0', 0, 0, 0, 0);
+    return 0;
 }
