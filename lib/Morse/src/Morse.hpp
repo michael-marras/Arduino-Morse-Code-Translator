@@ -36,17 +36,15 @@ class Morse {
         ~Morse();
 
         /**
-         * @brief Transmits the morsecode message through the arduino board using the specified pin number
-         * @param onBoard is the pin number being used in the led circuit on the arduino
-         * @return 0 if successful, 1 if not
-         */
-        uint8_t Transmit(uint8_t onBoard);
-
-        /**
          * @brief Returns english message from object
          * @return this -> messageEng
          */
         const char* GetMessageEng();
+
+        /**
+         * @brief Get the messageMorse char that has the null terminator
+         */
+        MorseChar GetMessageMorseNullTerm();
 
         /**
          * @brief Takes a character and returns the respective MorseCode struct
@@ -56,11 +54,6 @@ class Morse {
         MorseChar GetMorseChar(const char& letter);
 
         /**
-         * @brief clear message in Morse object
-         */
-        void ClearMessage();
-
-        /**
          * @brief sets the message of the morse object
          * @param english message to be stored in morse object
          * @return 0 if successful, 1 if not
@@ -68,13 +61,20 @@ class Morse {
         uint8_t SetMessage(const char* messageEng);
 
         /**
-         * @brief Get the messageMorse char that has the null terminator
+         * @brief clear message in Morse object
          */
-        MorseChar GetMessageMorseNullTerm();
+        void ClearMessage();
+
+        /**
+         * @brief Transmits the morsecode message through the arduino board using the specified pin number
+         * @param onBoard is the pin number being used in the led circuit on the arduino
+         * @return 0 if successful, 1 if not
+         */
+        uint8_t Transmit(uint8_t onBoard);
 
     private:
         
-        static constexpr uint8_t  MORSE_TABLE_SIZE = 27;
+        static constexpr uint8_t  MORSE_TABLE_SIZE = 28;
         static constexpr uint8_t  DOT_MS           = 120;
         static constexpr uint16_t DASH_MS          = 360;
         static constexpr uint8_t  MAX_MORSE_LENGTH = 64;
@@ -109,6 +109,7 @@ class Morse {
             MorseChar('X', DASH_MS, DOT_MS, DOT_MS, DASH_MS),      // -..-
             MorseChar('Y', DASH_MS, DOT_MS, DASH_MS, DASH_MS),     // -.--
             MorseChar('Z', DASH_MS, DASH_MS, DOT_MS, DOT_MS),      // --..
+            MorseChar(' ', 0, 0, 0, 0),                            //
             MorseChar('\0', 0, 0, 0, 0, true)                      // error
         };
 

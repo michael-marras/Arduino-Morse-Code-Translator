@@ -1,7 +1,6 @@
 #include <Arduino.h>
 #include <unity.h>
 #include <Morse.hpp>
-#define ON_BOARD = 12
 
 void test_transmit() {
     Morse morse;
@@ -9,6 +8,13 @@ void test_transmit() {
         1,
         morse.Transmit(12)
     );
+
+    morse.SetMessage("Hello! World");
+    TEST_ASSERT_EQUAL_INT(
+        1,
+        morse.Transmit(12)
+    ); 
+    // Test to make surge this -> messageEng is nullptr and the first index of the messageMorse is the Error MorseChar
 }
 
 void setup() {

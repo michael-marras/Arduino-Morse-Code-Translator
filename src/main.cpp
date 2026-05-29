@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <Morse.hpp>
 
-constexpr const char* MESSAGE      = "E T EE TT";
+constexpr const char* MESSAGE      = "Hello World";
 constexpr uint8_t     LED_PIN      = 12;
 constexpr uint16_t    FIVE_SECONDS = 5000;
 
