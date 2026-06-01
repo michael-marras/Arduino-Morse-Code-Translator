@@ -63,7 +63,7 @@ TEST(GetMorseCharTest, Invalid) {
 }
 
 TEST(TranslateTest, Invalid) {
-    EXPECT_EQ(morseDefault.SetMessage("!"), 1);
+    EXPECT_EQ(morseDefault.SetMessage("["), 1);
 }
 
 int main(int argc, char **argv) {

@@ -7,7 +7,12 @@ constexpr uint16_t DIFFERENT_LETTERS_SPACE_MS = 360;
 constexpr uint16_t WORD_SPACE_MS              = 840;
 constexpr uint8_t  ASCII_DIFF                 = 32;
 constexpr uint8_t  SPACE                      = 26;
-constexpr uint8_t  ERROR                      = 27;
+constexpr uint8_t  EXCLAMATION                = 27;
+constexpr uint8_t  COMMA                      = 28;
+constexpr uint8_t  PERIOD                     = 29;
+constexpr uint8_t  QUESTION                   = 30;
+constexpr uint8_t  NULL_TERMINATOR            = 31;
+constexpr uint8_t  ERROR                      = 32;
 
 // Public Methods
 
@@ -35,14 +40,30 @@ MorseChar Morse::GetMessageMorseNullTerm() {
 
 MorseChar Morse::GetMorseChar(const char& letter) { //Very Error prone if letter does not fall in the range of A-Z or ' '
     uint8_t morseKey;
-    if (letter == ' ') {
-        morseKey = SPACE;
-    } 
-    else if (letter >= 'a' && letter <= 'z' ) {
+    
+    if (letter >= 'a' && letter <= 'z' ) {
         morseKey = letter - ASCII_DIFF - 'A';
     }
     else if (letter >= 'A' && letter <= 'Z'){
         morseKey = letter - 'A';
+    }
+    else if (letter == ' ') {
+        morseKey = SPACE;
+    }
+    else if (letter == '!') {
+        morseKey = EXCLAMATION;
+    }
+    else if (letter == ',') {
+        morseKey = COMMA;
+    }
+    else if (letter == '.') {
+        morseKey = PERIOD;
+    }
+    else if (letter == '?') {
+        morseKey = QUESTION;
+    }
+    else if (letter == '\0') {
+        morseKey = NULL_TERMINATOR;
     }
     else {
         morseKey = ERROR;
@@ -111,7 +132,7 @@ void Morse::ClearMessageEng() {
 }
 
 void Morse::ClearMessageMorse() {
-    this -> messageMorse[0] = this -> GetMorseChar(ERROR);
+    this -> messageMorse[0] = MorseChar('\0', true);
 }
 
 uint8_t Morse::Translate() {
@@ -130,6 +151,6 @@ uint8_t Morse::Translate() {
         this -> messageMorse[i] = morseChar;
     }
 
-    this -> messageMorse[i] = MorseChar('\0', 0, 0, 0, 0);
+    this -> messageMorse[i] = this -> GetMorseChar('\0');
     return 0;
 }

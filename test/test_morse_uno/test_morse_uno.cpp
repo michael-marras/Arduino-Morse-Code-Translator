@@ -2,14 +2,23 @@
 #include <unity.h>
 #include <Morse.hpp>
 
-void test_transmit() {
+void test_transmit_valid() {
+    Morse morse("Hello World");
+
+    TEST_ASSERT_EQUAL_INT(
+        0,
+        morse.Transmit(12)
+    );
+}
+
+void test_transmit_invalid() {
     Morse morse;
     TEST_ASSERT_EQUAL_INT(
         1,
         morse.Transmit(12)
     );
 
-    morse.SetMessage("Hello! World");
+    morse.SetMessage("Hello[ World");
     TEST_ASSERT_EQUAL_INT(
         1,
         morse.Transmit(12)
@@ -19,7 +28,8 @@ void test_transmit() {
 
 void setup() {
     UNITY_BEGIN();
-    RUN_TEST(test_transmit);
+    RUN_TEST(test_transmit_valid);
+    RUN_TEST(test_transmit_invalid);
     UNITY_END();
 }
 
