@@ -26,8 +26,6 @@ Morse::Morse(const char* messageEng)
     }
 }
 
-Morse::~Morse() = default;
-
 const char* Morse::GetMessageEng() {
     return this -> messageEng;
 }

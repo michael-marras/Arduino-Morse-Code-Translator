@@ -41,11 +41,6 @@ class Morse {
         Morse(const char* messageEng);
 
         /**
-         * @brief class deconstructor
-         */
-        ~Morse();
-
-        /**
          * @brief Returns english message from object
          * @return this -> messageEng
          */
