@@ -19,7 +19,17 @@ class StateMachine {
         /**
          * @brief Get Message
          */
-        const char* GetMessage();
+        const char* GetBuffer();
+
+        /**
+         * @brief Update the buffer with new input
+         */
+        void UpdateBuffer();
+
+        /**
+         * @brief Process the buffer into a c string
+         */
+        const char* ProcessBuffer();
 
         /**
          * @brief transitions for state machine
@@ -32,15 +42,20 @@ class StateMachine {
         void Output();
 
     private:
-        states currentState = states::RECEIVING;
-        Morse  morse;
-        const char* message = "Hello world";
-
-        static constexpr uint8_t     PRESSED = 0;
-        static constexpr uint8_t     LED_PIN = 12;
-        static constexpr uint8_t     ERROR   = 1;
+        static constexpr uint8_t PRESSED = 0;
+        static constexpr uint8_t LED_PIN = 12;
+        static constexpr uint8_t ERROR   = 1;
+        static constexpr uint8_t MAX_BUFFER_SIZE = 64;
 
         static constexpr uint16_t RECEIVING_DELAY    = 125;
         static constexpr uint16_t TRANSMITTING_DELAY = 125;
+
+        char buffer[MAX_BUFFER_SIZE];
+        int16_t inChar = -1;
+        bool bufferFull = false;
+
+        states  currentState = states::RECEIVING;
+        Morse   morse;
+        uint8_t bufferIndex = 0;
 };
 #endif
