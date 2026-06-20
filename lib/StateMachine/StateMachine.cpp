@@ -13,11 +13,9 @@ void StateMachine::Transition(Input input) {
 
     if ((input.transmitButton == PRESSED) && (this -> currentState == states::RECEIVING)) {
         this -> currentState = states::TRANSMITTING;
-        Serial.println("Transmitting");
     }
     else if (currentState == states::TRANSMITTING) {
         this -> currentState = states::RECEIVING;
-        Serial.println("Receiving");
     }      
 }
 
