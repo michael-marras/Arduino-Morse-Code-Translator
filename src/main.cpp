@@ -8,7 +8,8 @@ constexpr uint8_t  LED_PIN = 12;
 
 void setup() {
   Serial.begin(BAUD);
-  pinMode(LED_PIN, OUTPUT); 
+  pinMode(LED_PIN, OUTPUT);
+  Serial.println("Receiving..."); 
 }
 
 InputHandler inputHandler;
