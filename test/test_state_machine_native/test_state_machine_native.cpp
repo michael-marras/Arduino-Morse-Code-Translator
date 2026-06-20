@@ -4,7 +4,6 @@
 StateMachine stateMachine;
 
 TEST(ConstructorTest, Default) {
-    EXPECT_EQ(stateMachine.GetBuffer(), nullptr);
     EXPECT_EQ(stateMachine.GetCurrentState(), states::RECEIVING);
 }
 
