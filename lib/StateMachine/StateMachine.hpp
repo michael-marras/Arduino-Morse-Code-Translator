@@ -11,6 +11,10 @@ enum class states {
 
 class StateMachine {
     public:
+        static constexpr uint8_t  PRESSED   = 0;
+        static constexpr uint16_t UNPRESSED = 1023;
+        static constexpr int8_t   NO_SERIAL_INPUT = Input::NO_SERIAL_INPUT;
+
         /**
          * @brief Get current state
          */
@@ -24,12 +28,7 @@ class StateMachine {
         /**
          * @brief Update the buffer with new input
          */
-        void UpdateBuffer();
-
-        /**
-         * @brief Process the buffer into a c string
-         */
-        const char* ProcessBuffer();
+        void UpdateBuffer(int16_t& inChar);
 
         /**
          * @brief transitions for state machine
@@ -42,20 +41,22 @@ class StateMachine {
         void Output();
 
     private:
-        static constexpr uint8_t PRESSED = 0;
-        static constexpr uint8_t LED_PIN = 12;
         static constexpr uint8_t ERROR   = 1;
-        static constexpr uint8_t MAX_BUFFER_SIZE = 64;
+        static constexpr uint8_t LED_PIN = 12;
 
-        static constexpr uint16_t RECEIVING_DELAY    = 125;
-        static constexpr uint16_t TRANSMITTING_DELAY = 125;
+        static constexpr uint8_t  MAX_BUFFER_SIZE    = 64;
+        static constexpr uint16_t RECEIVING_DELAY    = 100;
+        static constexpr uint8_t  MAX_BUFFER_LENGTH  = MAX_BUFFER_SIZE - 1;
+        static constexpr uint16_t TRANSMITTING_DELAY = 100;
 
+        Morse morse;
         char buffer[MAX_BUFFER_SIZE];
-        int16_t inChar = -1;
-        bool bufferFull = false;
 
+        bool transitioned    = true;
+        uint8_t bufferIndex  = 0;
+        int16_t inChar       = NO_SERIAL_INPUT;
         states  currentState = states::RECEIVING;
-        Morse   morse;
-        uint8_t bufferIndex = 0;
+        
+        
 };
 #endif

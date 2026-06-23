@@ -3,6 +3,9 @@
 Input InputHandler::Read() {
 
     int16_t inChar = Serial.read();
+    if (inChar != Input::NO_SERIAL_INPUT && inChar != '\r') {
+        Serial.print((char)inChar);
+    }
     
-    return Input(analogRead(TRANSMIT_PIN), analogRead(WRITE_PIN), inChar);
+    return Input(analogRead(TRANSMIT_PIN), inChar);
 }

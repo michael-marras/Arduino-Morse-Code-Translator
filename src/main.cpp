@@ -9,12 +9,12 @@ constexpr uint8_t  LED_PIN = 12;
 void setup() {
   Serial.begin(BAUD);
   pinMode(LED_PIN, OUTPUT);
-  Serial.println("Receiving..."); 
+  Serial.println("Translator Initialized"); 
 }
 
+Input        input;
 InputHandler inputHandler;
 StateMachine stateMachine;
-Input input;
 
 void loop() {
   input = inputHandler.Read();

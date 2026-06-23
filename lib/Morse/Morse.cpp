@@ -114,7 +114,7 @@ uint8_t Morse::Transmit(uint8_t onBoard) {
         }
     }
 
-    morseChar = this -> messageMorse[i];
+    morseChar = this -> messageMorse[i]; //could be redundant check later
     if (morseChar.error) {
         return 1;
     }
