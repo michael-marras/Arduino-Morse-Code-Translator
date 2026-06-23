@@ -12,7 +12,6 @@ class InputHandler {
         Input Read();
 
     private:
-        static constexpr uint16_t WRITE_PIN    = A0;
-        static constexpr uint16_t TRANSMIT_PIN = A1;
+        static constexpr uint16_t TRANSMIT_PIN  = A1;
 };
 #endif

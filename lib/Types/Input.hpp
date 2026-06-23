@@ -4,11 +4,12 @@
 #include <stdint.h>
 
 struct Input {
+    static constexpr int8_t NO_SERIAL_INPUT = -1;
+
     uint16_t transmitButton;
-    uint16_t writeButton;
     int16_t  inChar;
 
-    Input(uint16_t transmitButton = 0, uint16_t writeButton = 0, int16_t inChar = -1) 
-        : transmitButton(transmitButton), writeButton(writeButton), inChar(inChar) {}
+    Input(uint16_t transmitButton = 0, int16_t inChar = -1) 
+        : transmitButton(transmitButton), inChar(inChar) {}
 };
 #endif  
