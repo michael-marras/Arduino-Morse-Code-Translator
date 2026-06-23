@@ -11,8 +11,9 @@ const char* StateMachine::GetBuffer() {
 
 void StateMachine::Transition(Input input) { 
     this -> inChar = input.inChar;
-
-    bool transmitRequsted = input.transmitButton == PRESSED || this -> inChar == '\r';
+    
+    bool enterKeyPressed = this -> inChar == '\r';
+    bool transmitRequsted = input.transmitButton == PRESSED || enterKeyPressed;
     bool isReceiving = this -> currentState == states::RECEIVING;
     bool isStateTransmitting = this -> currentState == states::TRANSMITTING;
     if (transmitRequsted && isReceiving) {
@@ -29,7 +30,8 @@ void StateMachine::UpdateBuffer(int16_t& inChar) {
     uint8_t i = this -> bufferIndex;
 
     if (inChar != NO_SERIAL_INPUT 
-        && i < MAX_BUFFER_LENGTH) 
+        && i < MAX_BUFFER_LENGTH
+        && inChar != '\n') 
         {
         this -> buffer[i] = (char)inChar;
         this -> bufferIndex++;
